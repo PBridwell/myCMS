@@ -57,6 +57,33 @@ const connection = require("./sqlconnect")
                 console.table(res);
                 start();
               })
+              break;
+            case "Add Department":
+              inquirer.prompt([
+                {
+                  type: "input",
+                  name: "dept_name",
+                  message:"What department would you like to add?"
+                },
+              ]).then(answer => {
+                  connection.query(
+                    "INSERT INTO department SET ?",
+                    {
+                      name: answer.dept_name
+                    },
+                    function (err) {
+                      if(err) throw err;
+                      console.log("Department succesfully added");
+                      // Display updated list
+                      connection.query("SELECT * FROM department", function(err, res) {
+                        if(err) throw err;
+                        console.table(res);
+                        start();
+                      })
+                    }
+                  )
+              })
+              break;
               case "Finish":
                 connection.end();
                   break;
