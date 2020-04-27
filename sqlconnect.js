@@ -1,5 +1,7 @@
+// Bring in mysql package
 const mysql = require("mysql");
 
+// Set parameters for connection
 const connection = mysql.createConnection({
     host: "localhost",
   

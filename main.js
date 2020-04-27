@@ -15,30 +15,59 @@ const connection = require("./sqlconnect")
 
 
 
-function start() {
+  function start() {
     inquirer
-      .prompt([
-          {
-              name: "homepage",
-              type: "list",
-              message: "What would you like to do?",
-              choices: [
-                "View all employees",
-                "Add employee",
-                "View departments",
-                "Add departments", 
-                "View roles", 
-                "Update employee roles",
-                "Add roles" 
-            ]
-          },
+        .prompt([
+            {
+                type: "list",
+                message: "What do you want to do?",
+                choices: [
+                    "Add Department",
+                    "View Departments",
+                    "Add Role",
+                    "View Roles",
+                    "Add Employee",
+                    "View Employees",
+                    "Update Employee Role",
+                    "Finish",
+                ],
+                name: "firstChoice"
+            },
         ])
+        .then(response => {
+          const selection = response.firstChoice;
+          switch(selection) {
+            case "View Employees":
+              connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, role.id, department.name FROM EMPLOYEE LEFT JOIN role ON (employee.role_id = role.id) LEFT JOIN department ON (role.department_id = department.id)", function (err, res) {
+                if (err) throw err;
+                console.table(res);
+                start();
+              })
+              break; 
+            case "View Roles":
+              connection.query("SELECT employee.first_name, employee.last_name, role.id, role.title, role.salary FROM role LEFT JOIN employee ON (role.id = employee.role_id)", function (err, res) {
+                if (err) throw err;
+                console.table(res);
+                start();
+              })
+              break;
+            case "View Departments": 
+              connection.query("SELECT * FROM department", function(err, res) {
+                if (err) throw err;
+                console.table(res);
+                start();
+              })
+              case "Finish":
+                connection.end();
+                  break;
+                default: 
+                  break;
+          }
 
-        .then(res => {
-
-        })
         
-      
-      }
-      connection.end();
+        
+        })
+
+        
+  }
           
