@@ -1,11 +1,19 @@
 // Bringing in dependencies
-const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
-const queries = require("./queries.js");
+
+// Connecting to sql through import
+const connection = require("./sqlconnect")
+
+// Init connection
+  connection.connect(function(err) {
+    if (err) throw err;
+    console.log("connection to database successful ");
+    start();
+  });
 
 
-start();
+
 
 function start() {
     inquirer
@@ -27,26 +35,10 @@ function start() {
         ])
 
         .then(res => {
-            console.log(res);
-        // Set switch based on initial answer
-        const homepage = res.homepage
-        switch(homepage) {
-            case "View all employees": queries.viewAll();
-                break;
-            // case "View employees by roll": viewByRoll();
-            //     break;
-            // case "View employees by department": viewByDeparment();
-            //     break;
-            // case "Add a department": addDepartment();
-            //     break;
-            // case "Add an employee": addEmployee();
-            //     break;
-            // case "Add a role": addRole();
-            //     break;
-            // case "Update an employee's role": updateRole();
-            //     break;
-            // case "Finish": endConnection();
-                default: connection.end()
-         };
-    })
-};
+
+        })
+        
+      
+      }
+      connection.end();
+          
