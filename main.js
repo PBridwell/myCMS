@@ -2,6 +2,7 @@
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+
 // Connecting to sql through import
 const connection = require("./sqlconnect")
 
@@ -93,7 +94,6 @@ const connection = require("./sqlconnect")
               connection.query("SELECT * FROM DEPARTMENT", 
               function(err, res) {
                 if(err) throw err;
-                console.log(res);
                 inquirer.prompt([
                   {
                     type: "input",
@@ -139,7 +139,6 @@ const connection = require("./sqlconnect")
               connection.query(
                 "SELECT * FROM role", function(err, roles) {
                   if (err) throw err;
-                  console.log(roles);
                   connection.query(
                     "SELECT * FROM employee", function(err, employees) {
                       if (err) throw err; 
@@ -191,7 +190,6 @@ const connection = require("./sqlconnect")
               connection.query(
                 "SELECT * FROM role", function(err, roles) {
                   if(err) throw err;
-                  console.log(roles)
                 connection.query(
                   "SELECT * FROM employee", function(err, employees) {
                     if(err) throw err;
