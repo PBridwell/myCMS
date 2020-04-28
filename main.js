@@ -37,6 +37,7 @@ const connection = require("./sqlconnect")
         .then(response => {
           const selection = response.firstChoice;
           switch(selection) {
+            // views all employees
             case "View Employees":
               connection.query("SELECT employee.first_name, employee.last_name, role.title, role.salary, role.id, department.name FROM EMPLOYEE LEFT JOIN role ON (employee.role_id = role.id) LEFT JOIN department ON (role.department_id = department.id)", function (err, res) {
                 if (err) throw err;
@@ -44,6 +45,7 @@ const connection = require("./sqlconnect")
                 start();
               })
               break; 
+              // Views all roles
             case "View Roles":
               connection.query("SELECT employee.first_name, employee.last_name, role.id, role.title, role.salary FROM role LEFT JOIN employee ON (role.id = employee.role_id)", function (err, res) {
                 if (err) throw err;
@@ -51,7 +53,8 @@ const connection = require("./sqlconnect")
                 start();
               })
               break;
-            case "View Departments": 
+            case "View Departments":
+              // Views all departments 
               connection.query("SELECT * FROM department", function(err, res) {
                 if (err) throw err;
                 console.table(res);
@@ -59,6 +62,7 @@ const connection = require("./sqlconnect")
               })
               break;
             case "Add Department":
+              // Adds departments
               inquirer.prompt([
                 {
                   type: "input",
@@ -84,7 +88,8 @@ const connection = require("./sqlconnect")
                   )
               })
               break;
-            case "Add Role": 
+            case "Add Role":
+              // Adds a new role 
               connection.query("SELECT * FROM DEPARTMENT", 
               function(err, res) {
                 if(err) throw err;
@@ -129,6 +134,58 @@ const connection = require("./sqlconnect")
                     )
                 })
               })
+              break;
+            case "Add Employee": 
+              connection.query(
+                "SELECT * FROM role", function(err, roles) {
+                  if (err) throw err;
+                  console.log(roles);
+                  connection.query(
+                    "SELECT * FROM employee", function(err, employees) {
+                      if (err) throw err; 
+                      inquirer.prompt([
+                        {
+                          type: "input",
+                          name: "first_name",
+                          message: "What is the employee's first name?"
+                        },
+                        {
+                          type: "input",
+                          name: "last_name",
+                          message: "what is the employee's last name?"
+                        },
+                        {
+                          type: "list",
+                          name: "role_id",
+                          message: "What is the employee's role?",
+                          choices: () => roles.map(role => `${role.id} ${role.title}`)
+                        }
+                      ]).then(answer => {
+                          connection.query(
+                            "INSERT INTO employee SET ?",
+                            {
+                              first_name: answer.first_name,
+                              last_name: answer.last_name,
+                              role_id: parseInt(answer.role_id)
+                            },
+                            function(err) {
+                              if(err) throw err;
+                              console.log(`Added ${answer.first_name} ${answer.last_name} as an employee`);
+                              // View updated employees
+                              connection.query(
+                                "SELECT * FROM employee", function(err,res) {
+                                  if (err) throw err;
+                                  console.table(res);
+                                  start();
+                                }
+                              )
+                            }
+                          )
+                      })
+                    }
+                  )
+                }
+              )
               break;
               case "Finish":
                 connection.end();
