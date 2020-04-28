@@ -84,6 +84,52 @@ const connection = require("./sqlconnect")
                   )
               })
               break;
+            case "Add Role": 
+              connection.query("SELECT * FROM DEPARTMENT", 
+              function(err, res) {
+                if(err) throw err;
+                console.log(res);
+                inquirer.prompt([
+                  {
+                    type: "input",
+                    message: "What role would you like to add?",
+                    name: "title"
+                  },
+                  {
+                    type: "input",
+                    message: "What is the salary for this role?",
+                    name: "salary"
+                  },
+                  {
+                    type: "list",
+                    message: "What department does this role belong to?",
+                    name: "department_id",
+                    choices: () => res.map(department => `${department.id} ${department.name}`)
+                  }
+                ]).then(answer => {
+                    connection.query(
+                      "INSERT INTO role SET ?",
+                      {
+                        title: answer.title,
+                        salary: answer.salary, 
+                        department_id: answer.department_id.slice(0, 1)
+                      },
+                      function(err) {
+                        if(err) throw err; 
+                        console.log(`Added role ${answer.title} successfully!`);
+                        connection.query(
+                          "SELECT * FROM  role", function(err, res) {
+                            if(err) throw err;
+                            console.table(res);
+                            start();
+
+                          }
+                        )
+                      }
+                    )
+                })
+              })
+              break;
               case "Finish":
                 connection.end();
                   break;
