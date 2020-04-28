@@ -187,6 +187,46 @@ const connection = require("./sqlconnect")
                 }
               )
               break;
+            case "Update Employee Role":
+              connection.query(
+                "SELECT * FROM role", function(err, roles) {
+                  if(err) throw err;
+                  console.log(roles)
+                connection.query(
+                  "SELECT * FROM employee", function(err, employees) {
+                    if(err) throw err;
+                    inquirer.prompt([
+                      {
+                        type: "list",
+                        name: "eID",
+                        message: "Which employee would you like to update?",
+                        choices: () => employees.map(employee => 
+                          `${employee.id} ${employee.first_name} ${employee.last_name}`)
+                      },
+                      {
+                        type: "list",
+                        name: "eRole",
+                        message: "What would you like to update their role to?",
+                        choices: () => roles.map(role => `${role.id} ${role.title}`)
+                      }
+                    ])
+                    .then(answers => {
+                      connection.query(
+                        "UPDATE employee SET role_id =? WHERE id =?",
+                        [answers.eRole.slice(0,1), answers.eID.slice(0,1)],
+                        function(err, res) {
+                          if(err) throw err; 
+                          console.table(res);
+                          start();
+                        }
+                      )
+                    })
+                  }
+                )
+                }
+
+              )
+              break;
               case "Finish":
                 connection.end();
                   break;
